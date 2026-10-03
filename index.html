@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Digital Ship Inspection &amp; Engineering Analysis System</title>
+  <meta name="description" content="Educational ship inspection, structural damage assessment and preliminary stability simulation — HTML/CSS/JavaScript project.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b1f3a'/%3E%3Cpath d='M5 18h22l-3 7H8z' fill='%234d88ec'/%3E%3Cpath d='M10 18v-6h8v6M14 12V8' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="6" fill="#1b3a66"/><path d="M5 18h22l-3 7H8z" fill="#4d88ec"/><path d="M10 18v-6h8v6M14 12V8" stroke="#fff" stroke-width="2" fill="none"/></svg>
+      <div>
+        <div class="brand-title">DSIS</div>
+        <div class="brand-sub">Ship Inspection &amp; Analysis</div>
+      </div>
+    </div>
+    <nav class="nav" id="nav">
+      <div class="nav-group">Overview</div>
+      <a href="#dashboard" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard</a>
+
+      <div class="nav-group">Module 1 · Inspection</div>
+      <a href="#ship" data-view="ship">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 15h18l-3 6H6z"/><path d="M7 15V9h10v6M12 9V4"/></svg>
+        Ship Particulars</a>
+      <a href="#findings" data-view="findings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>
+        Findings <span class="mod-tag" id="nav-count">0</span></a>
+      <a href="#report" data-view="report">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>
+        Inspection Report</a>
+
+      <div class="nav-group">Module 2 · Structure</div>
+      <a href="#assessment" data-view="assessment">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V10l7-6 7 6v11"/><path d="M9 21v-6h6v6"/></svg>
+        Damage Assessment</a>
+
+      <div class="nav-group">Module 3 · Design</div>
+      <a href="#stability" data-view="stability">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 14c3 2 5 2 8 0s5-2 8 0 3 1 4 1"/><path d="M6 14l2-6h8l2 6M12 8V3"/></svg>
+        Stability Simulation</a>
+
+      <div class="nav-group">Project</div>
+      <a href="#about" data-view="about">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>
+        Methodology &amp; Data</a>
+    </nav>
+    <div class="sidebar-foot">Educational project · v1.0<br>Data stored locally in this browser</div>
+  </aside>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <header class="topbar">
+      <button class="btn-icon menu-btn" id="menu-btn" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div>
+        <div class="topbar-title" id="page-title">Dashboard</div>
+      </div>
+      <div class="topbar-crumb" id="page-crumb">Digital Ship Inspection &amp; Engineering Analysis System</div>
+      <div class="topbar-right">
+        <span class="vessel-chip" id="vessel-chip" title="Current vessel">No vessel</span>
+        <span id="clock"></span>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- =============== DASHBOARD =============== -->
+      <section class="view" id="view-dashboard" data-title="Dashboard">
+        <div class="page-head">
+          <div>
+            <h2>Engineering Dashboard</h2>
+            <p>Summary of inspection findings, structural assessments and stability simulation for the current vessel.</p>
+          </div>
+          <a class="btn btn-primary" href="#findings">+ Add Finding</a>
+        </div>
+
+        <div id="dash-status" class="status-banner s-none"></div>
+
+        <div class="grid g-5 mt">
+          <div class="card kpi k-navy"><div class="kpi-label">Total Findings</div><div class="kpi-value" id="k-total">0</div><div class="kpi-sub">Recorded defects</div></div>
+          <div class="card kpi k-critical"><div class="kpi-label">Critical</div><div class="kpi-value" id="k-critical">0</div><div class="kpi-sub">Immediate action</div></div>
+          <div class="card kpi k-high"><div class="kpi-label">High</div><div class="kpi-value" id="k-high">0</div><div class="kpi-sub">Repair required</div></div>
+          <div class="card kpi k-moderate"><div class="kpi-label">Moderate</div><div class="kpi-value" id="k-moderate">0</div><div class="kpi-sub">Monitor</div></div>
+          <div class="card kpi k-low"><div class="kpi-label">Low</div><div class="kpi-value" id="k-low">0</div><div class="kpi-sub">Record only</div></div>
+        </div>
+
+        <div class="grid g-2 mt">
+          <div class="card">
+            <div class="card-head"><h3>Findings by Severity</h3></div>
+            <div class="card-body"><div class="chart" id="dash-chart-sev"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Findings by Damage Type</h3></div>
+            <div class="card-body"><div class="chart" id="dash-chart-type"></div></div>
+          </div>
+        </div>
+
+        <div class="grid g-main-side mt">
+          <div class="card">
+            <div class="card-head"><h3>Damage Location Map</h3><span class="hint">Profile view · numbered by finding</span></div>
+            <div class="card-body">
+              <div id="dash-map"></div>
+              <div class="map-legend">
+                <span><i style="background:#c62828"></i>Critical</span><span><i style="background:#e2671b"></i>High</span>
+                <span><i style="background:#d9a406"></i>Moderate</span><span><i style="background:#2e7d32"></i>Low</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Vessel</h3><a class="btn btn-outline btn-sm" href="#ship">Edit</a></div>
+            <div class="card-body" id="dash-ship"></div>
+          </div>
+        </div>
+
+        <div class="grid g-3 mt">
+          <a class="card mod-tile" href="#findings">
+            <span class="mt-num">Module 1</span><span class="mt-title">Digital Ship Inspection</span>
+            <span class="mt-desc">Record findings on the ship drawing, filter, and generate the inspection report.</span>
+            <span class="mt-stat" id="tile-1"></span>
+          </a>
+          <a class="card mod-tile" href="#assessment">
+            <span class="mt-num">Module 2</span><span class="mt-title">Structural Damage Assessment</span>
+            <span class="mt-desc">Thickness diminution, damage scoring, severity, and recommendations.</span>
+            <span class="mt-stat" id="tile-2"></span>
+          </a>
+          <a class="card mod-tile" href="#stability">
+            <span class="mt-num">Module 3</span><span class="mt-title">Stability Simulation</span>
+            <span class="mt-desc">Displacement, KB, BM, GM, GZ curve and preliminary stability evaluation.</span>
+            <span class="mt-stat" id="tile-3"></span>
+          </a>
+        </div>
+
+        <div class="card mt">
+          <div class="card-head"><h3>Recent Findings</h3><a class="btn btn-outline btn-sm" href="#findings">View all</a></div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>ID</th><th>Type</th><th>Severity</th><th>Location</th><th>Zone</th><th>Recorded</th></tr></thead>
+              <tbody id="dash-recent"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============== SHIP PARTICULARS =============== -->
+      <section class="view" id="view-ship" data-title="Ship Particulars">
+        <div class="page-head">
+          <div>
+            <h2>Ship Particulars</h2>
+            <p>Main data of the vessel under inspection. Values are validated before saving.</p>
+          </div>
+        </div>
+        <div class="grid g-main-side">
+          <div class="card">
+            <div class="card-head"><h3>Vessel Data Form</h3><span class="hint"><span style="color:#c62828">*</span> required</span></div>
+            <div class="card-body">
+              <form id="ship-form" novalidate>
+                <div class="form-grid cols-3">
+                  <div class="form-section-title">Identification</div>
+                  <div class="field" data-field="shipId"><label>Ship ID <span class="req">*</span></label><input type="text" id="s-shipId" maxlength="20" placeholder="e.g. SHP-001"><span class="err"></span></div>
+                  <div class="field" data-field="name"><label>Ship Name <span class="req">*</span></label><input type="text" id="s-name" maxlength="60" placeholder="e.g. MV Ocean Pioneer"><span class="err"></span></div>
+                  <div class="field" data-field="type"><label>Ship Type <span class="req">*</span></label><select id="s-type"></select><span class="err"></span></div>
+                  <div class="field" data-field="imo"><label>IMO Number <span class="req">*</span></label><input type="text" id="s-imo" maxlength="7" inputmode="numeric" placeholder="7 digits"><span class="help">Check digit verified (e.g. 9074729)</span><span class="err"></span></div>
+                  <div class="field" data-field="yearBuilt"><label>Year Built <span class="req">*</span></label><input type="number" id="s-yearBuilt" step="1" placeholder="e.g. 2008"><span class="err"></span></div>
+                  <div class="field" data-field="age"><label>Age <span class="unit">(years)</span></label><input type="text" id="s-age" readonly tabindex="-1"></div>
+
+                  <div class="form-section-title">Main Dimensions</div>
+                  <div class="field" data-field="length"><label>Length L <span class="unit">(m)</span> <span class="req">*</span></label><input type="number" id="s-length" step="0.01" placeholder="LBP"><span class="err"></span></div>
+                  <div class="field" data-field="beam"><label>Beam B <span class="unit">(m)</span> <span class="req">*</span></label><input type="number" id="s-beam" step="0.01"><span class="err"></span></div>
+                  <div class="field" data-field="depth"><label>Depth D <span class="unit">(m)</span> <span class="req">*</span></label><input type="number" id="s-depth" step="0.01"><span class="err"></span></div>
+                  <div class="field" data-field="draft"><label>Draft T <span class="unit">(m)</span> <span class="req">*</span></label><input type="number" id="s-draft" step="0.01"><span class="err"></span></div>
+
+                  <div class="form-section-title">Inspection</div>
+                  <div class="field" data-field="inspector"><label>Inspector</label><input type="text" id="s-inspector" maxlength="60" placeholder="Name"><span class="err"></span></div>
+                  <div class="field" data-field="inspectionDate"><label>Inspection Date</label><input type="date" id="s-inspectionDate"><span class="err"></span></div>
+                  <div class="field" data-field="place"><label>Place / Port</label><input type="text" id="s-place" maxlength="60" placeholder="e.g. Laem Chabang"><span class="err"></span></div>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn btn-outline" id="ship-reset">Reset Form</button>
+                  <button type="submit" class="btn btn-primary">Save Ship Data</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Derived Ratios</h3><span class="hint">Live from form</span></div>
+            <div class="card-body">
+              <table class="kv" id="ship-ratios"></table>
+              <p class="help mt" style="font-size:12px;color:#6b7a8f">L/B, B/T and T/D are basic proportions used in preliminary ship design.
+                Typical merchant ships: L/B ≈ 5–8, B/T ≈ 2.2–3.5.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============== FINDINGS =============== -->
+      <section class="view" id="view-findings" data-title="Findings">
+        <div class="page-head">
+          <div>
+            <h2>Inspection Findings</h2>
+            <p>1) Click on the ship drawing to mark the damage position → 2) fill in details → 3) Add Finding.</p>
+          </div>
+        </div>
+
+        <div class="grid g-main-side">
+          <div class="card">
+            <div class="card-head"><h3>Ship Profile — Select Position</h3><span class="hint">AP (aft) ← → FP (forward)</span></div>
+            <div class="card-body">
+              <div id="pick-map"></div>
+              <div class="pick-info" id="pick-info">No position selected — click inside the hull.</div>
+              <div class="map-legend">
+                <span><i style="background:#c62828"></i>Critical</span><span><i style="background:#e2671b"></i>High</span>
+                <span><i style="background:#d9a406"></i>Moderate</span><span><i style="background:#2e7d32"></i>Low</span>
+                <span><i style="background:none;border:2px solid #2f6fde"></i>Selected</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Add Finding</h3><span class="hint" id="next-id"></span></div>
+            <div class="card-body">
+              <form id="finding-form" novalidate>
+                <div class="form-grid">
+                  <div class="field full" data-field="position" style="display:none"><span class="err"></span></div>
+                  <div class="field" data-field="type"><label>Damage Type <span class="req">*</span></label><select id="f-type"></select><span class="err"></span></div>
+                  <div class="field" data-field="location"><label>Location <span class="req">*</span></label><input type="text" id="f-location" maxlength="80" placeholder="e.g. Fr. 85, Port side shell"><span class="err"></span></div>
+                  <div class="field full" data-field="severity">
+                    <label>Severity <span class="req">*</span></label>
+                    <div class="sev-picker" id="f-severity">
+                      <label><input type="radio" name="sev" value="Critical"><span class="dot" style="background:#c62828"></span>Critical</label>
+                      <label><input type="radio" name="sev" value="High"><span class="dot" style="background:#e2671b"></span>High</label>
+                      <label><input type="radio" name="sev" value="Moderate"><span class="dot" style="background:#d9a406"></span>Moderate</label>
+                      <label><input type="radio" name="sev" value="Low"><span class="dot" style="background:#2e7d32"></span>Low</label>
+                    </div>
+                    <span class="err"></span>
+                  </div>
+                  <div class="field" data-field="sizeLength"><label>Size — Length <span class="unit">(mm)</span> <span class="req">*</span></label><input type="number" id="f-sizeLength" step="any" min="0"><span class="err"></span></div>
+                  <div class="field" data-field="sizeWidth"><label>Size — Width <span class="unit">(mm)</span></label><input type="number" id="f-sizeWidth" step="any" min="0" placeholder="optional"><span class="err"></span></div>
+                  <div class="field full" data-field="description"><label>Description <span class="req">*</span></label><textarea id="f-description" maxlength="500" placeholder="Describe the defect"></textarea><span class="err"></span></div>
+                  <div class="field full" data-field="note"><label>Inspector Note</label><textarea id="f-note" maxlength="500" placeholder="Recommendation / remarks (optional)"></textarea><span class="err"></span></div>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn btn-outline" id="finding-clear">Clear</button>
+                  <button type="submit" class="btn btn-primary">Add Finding</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mt">
+          <div class="card-head"><h3>Findings Register</h3><span class="hint" id="findings-status"></span></div>
+          <div class="table-tools">
+            <input type="search" id="t-search" placeholder="Search ID, location, description…">
+            <select id="t-type"><option value="">All types</option></select>
+            <select id="t-sev"><option value="">All severities</option><option>Critical</option><option>High</option><option>Moderate</option><option>Low</option></select>
+            <select id="t-sort">
+              <option value="newest">Sort: Newest first</option>
+              <option value="oldest">Sort: Oldest first</option>
+              <option value="sev-desc">Sort: Severity (high → low)</option>
+              <option value="sev-asc">Sort: Severity (low → high)</option>
+              <option value="type">Sort: Damage type</option>
+              <option value="id">Sort: Finding ID</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>ID</th><th>Type</th><th>Severity</th><th>Location</th><th>Zone</th><th class="num">Size (mm)</th><th>Description</th><th>Recorded</th><th class="actions">Actions</th></tr></thead>
+              <tbody id="findings-body"></tbody>
+            </table>
+          </div>
+          <div class="table-foot" id="findings-foot"></div>
+        </div>
+      </section>
+
+      <!-- =============== REPORT =============== -->
+      <section class="view" id="view-report" data-title="Inspection Report">
+        <div class="card no-print">
+          <div class="card-body report-controls">
+            <strong style="color:#0b1f3a">Report options:</strong>
+            <label class="checkbox"><input type="checkbox" id="rp-inc-assess" checked> Include structural assessments (Module 2)</label>
+            <label class="checkbox"><input type="checkbox" id="rp-inc-stab" checked> Include latest stability case (Module 3)</label>
+            <span style="flex:1"></span>
+            <button class="btn btn-outline" id="rp-refresh">Refresh</button>
+            <button class="btn btn-navy" id="rp-print">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4v-7h16v7h-2M8 14h8v7H8z"/></svg>
+              Print / Save PDF</button>
+          </div>
+        </div>
+        <p class="no-print" style="font-size:12px;color:#6b7a8f;margin:8px 2px 0">Tip: In the print dialog choose “Save as PDF” as the destination to export a PDF file.</p>
+        <article class="report-doc" id="report-doc"></article>
+      </section>
+
+      <!-- =============== MODULE 2: ASSESSMENT =============== -->
+      <section class="view" id="view-assessment" data-title="Structural Damage Assessment">
+        <div class="page-head">
+          <div>
+            <h2>Ship Structural Damage Assessment</h2>
+            <p>Enter damage data → the system calculates thickness reduction, damage score, severity and preliminary status.</p>
+          </div>
+        </div>
+        <div class="disclaimer"><strong>⚠</strong><div><strong>Educational preliminary assessment only.</strong> Scores and thresholds are simplified rules defined for learning purposes.
+          They do not certify the safety of any vessel and do not replace a classification society surveyor or qualified engineer.
+          (การประเมินเบื้องต้นเพื่อการศึกษา ไม่ใช่การรับรองความปลอดภัยของเรือ)</div></div>
+
+        <div class="grid g-side-main mt">
+          <div class="card">
+            <div class="card-head"><h3>Damage Input</h3></div>
+            <div class="card-body">
+              <form id="as-form" novalidate>
+                <div class="form-grid">
+                  <div class="form-section-title">Location &amp; Structure</div>
+                  <div class="field full" data-field="location"><label>Location <span class="req">*</span></label><input type="text" id="a-location" maxlength="80" placeholder="e.g. Cargo Hold 3, Fr. 92, Stbd"><span class="err"></span></div>
+                  <div class="field" data-field="zone"><label>Hull Zone <span class="req">*</span></label><select id="a-zone">
+                    <option value="">— select —</option><option value="aft">Aft (0 – 0.3L)</option><option value="midship">Midship 0.4L (0.3 – 0.7L)</option><option value="forward">Forward (0.7 – 1.0L)</option></select><span class="err"></span></div>
+                  <div class="field" data-field="member"><label>Structural Member <span class="req">*</span></label><select id="a-member"></select><span class="help" id="a-member-cat"></span><span class="err"></span></div>
+
+                  <div class="form-section-title">Damage</div>
+                  <div class="field" data-field="type"><label>Damage Type <span class="req">*</span></label><select id="a-type"></select><span class="err"></span></div>
+                  <div class="field" data-field="through"><label>&nbsp;</label><label class="checkbox"><input type="checkbox" id="a-through"> Through-thickness</label><span class="help">Crack / weld defect only</span></div>
+                  <div class="field" data-field="length"><label>Length <span class="unit">(mm)</span> <span class="req">*</span></label><input type="number" id="a-length" step="any" min="0"><span class="err"></span></div>
+                  <div class="field" data-field="width"><label>Width <span class="unit">(mm)</span> <span class="req" id="a-width-req" hidden>*</span></label><input type="number" id="a-width" step="any" min="0"><span class="err"></span></div>
+                  <div class="field" data-field="depth"><label>Depth <span class="unit">(mm)</span> <span class="req" id="a-depth-req" hidden>*</span></label><input type="number" id="a-depth" step="any" min="0" placeholder="dent / pitting"><span class="err"></span></div>
+                  <div class="field" data-field="areaPct"><label>Breakdown Area <span class="unit">(%)</span> <span class="req" id="a-area-req" hidden>*</span></label><input type="number" id="a-areaPct" step="any" min="0" max="100" placeholder="coating"><span class="err"></span></div>
+
+                  <div class="form-section-title">Thickness Measurement</div>
+                  <div class="field" data-field="t0"><label>Original t₀ <span class="unit">(mm)</span> <span class="req" id="a-t-req" hidden>*</span></label><input type="number" id="a-t0" step="any" min="0" placeholder="as-built"><span class="err"></span></div>
+                  <div class="field" data-field="tm"><label>Measured tₘ <span class="unit">(mm)</span> <span class="req" id="a-t-req2" hidden>*</span></label><input type="number" id="a-tm" step="any" min="0" placeholder="UTM gauged"><span class="err"></span></div>
+                  <div class="field" data-field="allowPct"><label>Allowable Diminution <span class="unit">(%)</span> <span class="req">*</span></label><input type="number" id="a-allowPct" step="any" value="20"><span class="help">Typical 10–30% depending on member</span><span class="err"></span></div>
+                  <div class="field" data-field="years"><label>Years in Service</label><input type="number" id="a-years" step="any" min="0" placeholder="for corrosion rate"><span class="help" id="a-years-help"></span><span class="err"></span></div>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn btn-outline" id="as-clear">Clear</button>
+                  <button type="submit" class="btn btn-navy">Calculate</button>
+                  <button type="button" class="btn btn-primary" id="as-save" disabled>Save Assessment</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Assessment Result</h3><span class="hint" id="as-result-hint">Not calculated</span></div>
+            <div class="card-body" id="as-result">
+              <div class="chart-empty">Fill in the damage data and press <b>Calculate</b>.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid g-2 mt">
+          <div class="card">
+            <div class="card-head"><h3>Calculation Method</h3></div>
+            <div class="card-body">
+              <div class="formula">
+                <span class="c">Thickness diminution</span><br>
+                Δt = t₀ − tₘ &nbsp;&nbsp; Δt% = (t₀ − tₘ)/t₀ × 100<br>
+                t_min = t₀ × (1 − allowable%/100)<br>
+                Margin ratio = Δt% / allowable% &nbsp;<span class="c">(≥0.75 substantial, &gt;1 exceeds)</span><br>
+                Corrosion rate = Δt / years &nbsp;&nbsp; Remaining life = (tₘ − t_min)/rate<br>
+                <span class="c">Measurement score M (0–100)</span><br>
+                Corrosion: 75 × ratio &nbsp;|&nbsp; Crack: 40 + L/8 (+20 through)<br>
+                Dent: 7.5 × (depth/width × 100) &nbsp;|&nbsp; Coating: 1.5 × area%<br>
+                Weld: 30 + L/10 (+25 through)<br>
+                <span class="c">Final score</span><br>
+                S = min(100, M × f_member × f_zone)<br>
+                f_member: primary 1.25 · secondary 1.00 · tertiary 0.75<br>
+                f_zone: midship 0.4L 1.15 · aft/forward 1.00<br>
+                <span class="c">Severity: S ≥ 75 Critical · ≥ 50 High · ≥ 25 Moderate · &lt; 25 Low</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Saved Assessments</h3><span class="hint" id="as-count"></span></div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead><tr><th>Date</th><th>Location</th><th>Type</th><th class="num">Score</th><th>Severity</th><th class="actions"></th></tr></thead>
+                <tbody id="as-history"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============== MODULE 3: STABILITY =============== -->
+      <section class="view" id="view-stability" data-title="Stability Simulation">
+        <div class="page-head">
+          <div>
+            <h2>Preliminary Ship Design / Stability Simulation</h2>
+            <p>Change any input — results, diagram and curves update instantly.</p>
+          </div>
+        </div>
+        <div class="disclaimer"><strong>⚠</strong><div><strong>Educational simulation.</strong> Uses form coefficients and textbook approximations (Morrish KB, wall-sided GZ).
+          Not naval architecture software for real design or loading approval. (Simulation เพื่อการศึกษา)</div></div>
+
+        <div class="grid g-side-main mt">
+          <div class="card">
+            <div class="card-head"><h3>Design Inputs</h3><button class="btn btn-outline btn-sm" id="st-from-ship" title="Copy L, B, D, T from Ship Particulars">Use ship data</button></div>
+            <div class="card-body">
+              <form id="st-form" novalidate>
+                <div class="form-grid">
+                  <div class="field full">
+                    <label>Calculation mode</label>
+                    <div class="seg" id="st-mode"><button type="button" data-mode="draft" class="on">Input Draft → Displacement</button><button type="button" data-mode="disp">Input Displacement → Draft</button></div>
+                  </div>
+                  <div class="form-section-title">Main Dimensions</div>
+                  <div class="field" data-field="L"><label>Length L <span class="unit">(m)</span></label><input type="number" id="st-L" step="any"><span class="err"></span></div>
+                  <div class="field" data-field="B"><label>Beam B <span class="unit">(m)</span></label><input type="number" id="st-B" step="any"><span class="err"></span></div>
+                  <div class="field" data-field="D"><label>Depth D <span class="unit">(m)</span></label><input type="number" id="st-D" step="any"><span class="err"></span></div>
+                  <div class="field" data-field="T" id="st-T-wrap"><label>Draft T <span class="unit">(m)</span></label><input type="number" id="st-T" step="any"><span class="err"></span></div>
+                  <div class="field" data-field="disp" id="st-disp-wrap" hidden><label>Displacement Δ <span class="unit">(t)</span></label><input type="number" id="st-disp" step="any"><span class="err"></span></div>
+                  <div class="form-section-title">Form &amp; Loading</div>
+                  <div class="field" data-field="Cb"><label>Block coefficient C<sub>B</sub></label><input type="number" id="st-Cb" step="0.01"><span class="err"></span></div>
+                  <div class="field" data-field="Cwp"><label>Waterplane coeff. C<sub>WP</sub></label><input type="number" id="st-Cwp" step="0.01"><span class="err"></span></div>
+                  <div class="field" data-field="KG"><label>Centre of gravity KG <span class="unit">(m)</span></label><input type="number" id="st-KG" step="any"><span class="err"></span></div>
+                  <div class="field" data-field="FSC"><label>Free surface corr. <span class="unit">(m)</span></label><input type="number" id="st-FSC" step="any"><span class="err"></span></div>
+                  <div class="field" data-field="rho"><label>Water density ρ <span class="unit">(t/m³)</span></label><select id="st-rho"><option value="1.025">Seawater 1.025</option><option value="1.000">Fresh water 1.000</option></select><span class="err"></span></div>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn btn-outline" id="st-defaults">Reset Defaults</button>
+                  <button type="button" class="btn btn-primary" id="st-save">Save Case</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div>
+            <div id="st-verdict" class="status-banner s-none"></div>
+            <div class="card mt">
+              <div class="card-head"><h3>Calculated Values</h3></div>
+              <div class="card-body" id="st-values"></div>
+            </div>
+            <div class="card mt">
+              <div class="card-head"><h3>Preliminary Stability Checks</h3></div>
+              <div class="card-body" id="st-checks"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid g-2 mt">
+          <div class="card">
+            <div class="card-head"><h3>Midship Section — Heel Diagram</h3><span class="hint">Schematic, to scale</span></div>
+            <div class="card-body">
+              <div class="diagram" id="st-section"></div>
+              <div class="slider-row mt">
+                <label for="st-heel" style="font-size:12px;font-weight:600;color:#3b4757">Heel angle φ</label>
+                <input type="range" id="st-heel" min="0" max="45" step="1" value="10">
+                <output id="st-heel-out">10°</output>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Righting Lever (GZ) Curve</h3><span class="hint">Wall-sided formula</span></div>
+            <div class="card-body">
+              <div class="chart" id="st-gz"></div>
+              <div class="legend">
+                <span style="color:#2f6fde"><i style="background:#2f6fde"></i>GZ (valid range)</span>
+                <span style="color:#9aa7b8"><i class="dash" style="background:#9aa7b8"></i>Beyond deck-edge immersion</span>
+                <span style="color:#e2671b"><i class="dash" style="background:#e2671b"></i>GM tangent at 57.3°</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid g-2 mt">
+          <div class="card">
+            <div class="card-head"><h3>KB, KM and KG vs Draft</h3><span class="hint">Effect of draft on stability</span></div>
+            <div class="card-body">
+              <div class="chart" id="st-hydro"></div>
+              <div class="legend">
+                <span><i style="background:#0b1f3a"></i>KM</span><span><i style="background:#2f6fde"></i>KB</span>
+                <span><i style="background:#2e7d32"></i>GM (fluid)</span><span style="color:#c62828"><i class="dash" style="background:#c62828"></i>KG</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Formulas Used</h3></div>
+            <div class="card-body">
+              <div class="formula">
+                ∇ = L·B·T·C<sub>B</sub> &nbsp;&nbsp; Δ = ρ·∇ &nbsp;&nbsp; <span class="c">(Draft mode)</span><br>
+                T = Δ / (ρ·L·B·C<sub>B</sub>) &nbsp;&nbsp; <span class="c">(Displacement mode)</span><br>
+                A<sub>WP</sub> = C<sub>WP</sub>·L·B &nbsp;&nbsp; TPC = ρ·A<sub>WP</sub>/100<br>
+                KB = T·(5/6 − C<sub>B</sub>/(3·C<sub>WP</sub>)) &nbsp;<span class="c">Morrish</span><br>
+                I<sub>T</sub> ≈ C<sub>WP</sub>²·L·B³/12 &nbsp;&nbsp; BM = I<sub>T</sub>/∇<br>
+                KM = KB + BM &nbsp;&nbsp; GM = KM − KG &nbsp;&nbsp; GM<sub>f</sub> = GM − FSC<br>
+                GZ(φ) = sin φ·(GM<sub>f</sub> + ½·BM·tan²φ) &nbsp;<span class="c">wall-sided</span><br>
+                φ<sub>deck edge</sub> = atan((D − T)/(B/2))<br>
+                T<sub>roll</sub> = 2·C·B/√GM<sub>f</sub>, C = 0.373 + 0.023·B/T − 0.043·L/100<br>
+                <span class="c">Reference criteria: IMO IS Code 2008 — GM₀ ≥ 0.15 m; area 0–30° ≥ 0.055 m·rad</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mt">
+          <div class="card-head"><h3>Saved Design Cases</h3><span class="hint">Compare loading conditions</span></div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Saved</th><th class="num">L</th><th class="num">B</th><th class="num">T</th><th class="num">C<sub>B</sub></th><th class="num">Δ (t)</th><th class="num">KG</th><th class="num">GM<sub>f</sub></th><th>Result</th><th class="actions"></th></tr></thead>
+              <tbody id="st-cases"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============== ABOUT / METHODOLOGY =============== -->
+      <section class="view" id="view-about" data-title="Methodology & Data">
+        <div class="page-head">
+          <div>
+            <h2>Methodology &amp; Data Management</h2>
+            <p>Project scope, references and local data controls.</p>
+          </div>
+        </div>
+        <div class="grid g-2">
+          <div class="card">
+            <div class="card-head"><h3>About this Project</h3></div>
+            <div class="card-body">
+              <p><b>Digital Ship Inspection &amp; Engineering Analysis System</b> is a single-page web application developed as an
+                engineering portfolio project. It is built with HTML, CSS and vanilla JavaScript only — no server, no database,
+                no login. All data are stored in the browser's LocalStorage.</p>
+              <table class="kv">
+                <tr><th>Module 1</th><td>Digital Ship Inspection System</td></tr>
+                <tr><th>Module 2</th><td>Ship Structural Damage Assessment</td></tr>
+                <tr><th>Module 3</th><td>Preliminary Ship Design / Stability Simulation</td></tr>
+                <tr><th>Technology</th><td>HTML5 · CSS3 · JavaScript (ES5) · SVG</td></tr>
+                <tr><th>Storage</th><td>Browser LocalStorage</td></tr>
+              </table>
+              <div class="disclaimer mt"><strong>⚠</strong><div>All calculations are simplified and for educational purposes only. Results must not be used
+                to certify seaworthiness, structural adequacy or stability of a real vessel.</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>References (for study)</h3></div>
+            <div class="card-body">
+              <ul class="rec-list">
+                <li>IMO, <i>International Code on Intact Stability (IS Code) 2008</i> — GM₀ ≥ 0.15 m, area 0–30° ≥ 0.055 m·rad, roll period coefficient.</li>
+                <li>Morrish's approximation for the vertical centre of buoyancy (KB).</li>
+                <li>Wall-sided formula for GZ at moderate heel angles.</li>
+                <li>IACS Recommendation 87 / URZ10 concepts — "substantial corrosion" (wastage beyond 75% of allowable margin) and coating condition GOOD/FAIR/POOR.</li>
+                <li>Barrass &amp; Derrett, <i>Ship Stability for Masters and Mates</i>.</li>
+                <li>IMO number check-digit scheme (weights 7-6-5-4-3-2).</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card span-2">
+            <div class="card-head"><h3>Local Data</h3></div>
+            <div class="card-body">
+              <table class="kv" id="data-summary"></table>
+              <div class="form-actions" style="justify-content:flex-start">
+                <button class="btn btn-outline" id="data-demo">Load Demo Data</button>
+                <button class="btn btn-danger" id="data-clear">Clear All Data</button>
+              </div>
+              <p style="font-size:12px;color:#6b7a8f;margin-top:8px">Demo data fills in a sample vessel, findings and assessments for presentation. Clearing removes all saved data from this browser.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-back" id="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-head"><h3 id="modal-title">Detail</h3><button class="btn-icon" data-close aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot" id="modal-foot"></div>
+  </div>
+</div>
+<div class="toast-host" id="toast-host"></div>
+
+<!-- Scripts: pure logic first, then UI modules, then app bootstrap -->
+<script src="js/calc-inspection.js"></script>
+<script src="js/calc-assessment.js"></script>
+<script src="js/calc-stability.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/shipmap.js"></script>
+<script src="js/inspection.js"></script>
+<script src="js/report.js"></script>
+<script src="js/assessment.js"></script>
+<script src="js/stability.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
